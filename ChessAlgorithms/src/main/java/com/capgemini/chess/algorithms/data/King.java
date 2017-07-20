@@ -16,7 +16,7 @@ public class King extends Piece {
 		
 		for(int i=-1; i<2; i++){
 			for(int j=-1; j<2; j++){
-				if(i!=0 && j !=0) paths.add(new Path(i,j,false));
+				if(i!=0 || j !=0) paths.add(new Path(i,j,false));
 			}
 		}
 		//paths.add(new Path(-2,0,false));
@@ -39,7 +39,7 @@ public class King extends Piece {
 	
 
 	@Override
-	protected ArrayList<Coordinate> possibleStartCoordinates(Color color) {
+	public ArrayList<Coordinate> possibleStartCoordinates(Color color) {
 		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
 		if(color==color.BLACK){
 			possibleStartCoordinates.add(new Coordinate(4,7));

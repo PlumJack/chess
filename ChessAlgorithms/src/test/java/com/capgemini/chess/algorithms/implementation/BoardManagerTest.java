@@ -876,4 +876,24 @@ public class BoardManagerTest {
 		return counter;
 	}
 	
+	@Test
+	public void testEqualsOnFigures() throws InvalidMoveException {
+		// given
+		Rook rook1 = new Rook(Color.BLACK);
+		Rook rook2 = new Rook(Color.BLACK);
+		Rook rook3 = new Rook(Color.WHITE);
+		Rook rook4 = new Rook(Color.WHITE);
+		
+		Queen queen1 = new Queen(Color.BLACK);
+		Queen queen2 = new Queen(Color.WHITE);
+		// when
+		
+		// then
+		assertEquals(rook1, rook2);
+		assertEquals(rook3, rook4);
+		assertNotEquals(rook2, rook3);
+		assertNotEquals(rook1, queen1);
+		assertNotEquals(rook1, queen2);
+	}
+	
 }

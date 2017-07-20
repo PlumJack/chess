@@ -69,8 +69,8 @@ public class Board {
 	public Piece getPieceAt(Coordinate coordinate) {
 		return pieces[coordinate.getX()][coordinate.getY()];
 	}
-	/*
-	public Board copyBoard(){
+	
+	public Board generateCopy(){
 		Piece[][] piecesCopy = new Piece[SIZE][SIZE];
 		for(int i=0; i<pieces.length; i++){
 			for(int j=0; j<pieces[i].length; j++){
@@ -83,9 +83,9 @@ public class Board {
 		}
 		BoardState stateCopy = state;
 		Board boardCopy = new Board(piecesCopy,moveHistoryCopy,stateCopy);
-		return null;
+		return boardCopy;
 	}
-	*/
+	
 	
 	public ArrayList<Move> getMoveHistoryCopy() {
 		ArrayList<Move> moveHistoryCopy = new ArrayList<Move>();

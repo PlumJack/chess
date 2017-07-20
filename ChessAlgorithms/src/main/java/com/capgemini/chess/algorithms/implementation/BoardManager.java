@@ -12,6 +12,7 @@ import com.capgemini.chess.algorithms.data.Move;
 import com.capgemini.chess.algorithms.data.Path;
 import com.capgemini.chess.algorithms.data.Pawn;
 import com.capgemini.chess.algorithms.data.Piece;
+import com.capgemini.chess.algorithms.data.PieceCoordinate;
 import com.capgemini.chess.algorithms.data.Queen;
 import com.capgemini.chess.algorithms.data.Rook;
 import com.capgemini.chess.algorithms.data.enums.BoardState;
@@ -45,6 +46,7 @@ public class BoardManager {
 
 	public BoardManager(Board board) {
 		this.board = board;
+		//this.board = board.generateCopy();
 	}
 
 	/**
@@ -243,52 +245,51 @@ public class BoardManager {
 
 	private Move validateMove(Coordinate from, Coordinate to) throws InvalidMoveException, KingInCheckException {
 
-		if(!isInsideBoard(from)){
-			throw new InvalidMoveException("Incorrect start position.");
-		}
-		if(!isInsideBoard(to)){
-			throw new InvalidMoveException("Incorrect final position.");
-		}
-		Piece piece = board.getPieceAt(from);
-		if(piece == null){
-			throw new InvalidMoveException("There is no piece at the start position.");
-		}
-		if(piece.getColor() != calculateNextMoveColor()){
-			throw new InvalidMoveException("This is not your piece.");
-		}
+		initialPieceValidation(from,to);
 		
+		Piece piece = board.getPieceAt(from);
 		Piece fromCoordinateTo = board.getPieceAt(to);
 		
 		if(fromCoordinateTo==null){
 			//movement
 			
-			//ArrayList<Path> initialPossibleMovePaths = piece.getMovePaths();
-			ArrayList<Coordinate> initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,piece);				
+			ArrayList<Path> initialPossibleMovePaths = piece.getMovePaths();
+			//ArrayList<Path> initialPossibleMovePaths = pieceFromCoordinateFrom.getMovePaths();
+			ArrayList<Coordinate> initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);				
 			
 		//contains
+			Move initialMove;
 		if(initialPossibleMoveCoordinates.contains(to)){
-			Move initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));
+			initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));
 			
-			ArrayList<Move> movesCopy = board.getMoveHistoryCopy();
-			movesCopy.add(initialMove);
-			BoardManager testBoardManager = new BoardManager(movesCopy);
-			
-			if(testBoardManager.isKingInCheck(calculateNextMoveColor())){
-				throw new KingInCheckException();
-			} else {
+			if(!moveCausesSelfCheck(initialMove)){
 				return initialMove;
 			}
 			
 		} else {
 			//doubleMove
+			if(piece.getType()==PieceType.PAWN && piece.isMovedThisGame()==false){
+				Pawn pawn = ((Pawn)piece);
+				if(pawn.possibleStartCoordinates(calculateNextMoveColor()).contains(from)){
+					initialPossibleMovePaths = pawn.getDoubleMovePaths();
+					initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);
+					if(initialPossibleMoveCoordinates.size()==2){
+						initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));
+						
+						if(!moveCausesSelfCheck(initialMove)){
+							return initialMove;
+						}
+					}	
+				}
+				
+			}
+			
 			//enPassant
 			//castling
 			//else:
 			
 			throw new InvalidMoveException("You can't move this piece there.");
-		}
-			
-		
+		}		
 		} else {
 			// failed capture
 			if (fromCoordinateTo.getColor()==calculateNextMoveColor()){
@@ -296,25 +297,19 @@ public class BoardManager {
 			} else {
 				//capture
 				ArrayList<Path> initialPossibleCapturePaths = piece.getCapturePaths();
-				ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,piece);
+				//ArrayList<Path> initialPossibleCapturePaths = pieceFromCoordinateFrom.getCapturePaths();
+				ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,initialPossibleCapturePaths);
 				
-			//contains
-			if(initialPossibleCaptureCoordinates.contains(to)){
-				Move initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));
+				//contains
+				if(initialPossibleCaptureCoordinates.contains(to)){
+					Move initialMove = new Move(from,to,MoveType.CAPTURE,board.getPieceAt(from));
 				
-				ArrayList<Move> movesCopy = board.getMoveHistoryCopy();
-				movesCopy.add(initialMove);
-				BoardManager testBoardManager = new BoardManager(movesCopy);
-				
-				if(testBoardManager.isKingInCheck(calculateNextMoveColor())){
-					throw new KingInCheckException();
-				} else {
-					return initialMove;
-				}
-				
+					if(!moveCausesSelfCheck(initialMove)){
+						return initialMove;
+					}			
 				//capture end
-			}
-		}	
+				}
+			}	
 			
 		}
 		
@@ -323,19 +318,61 @@ public class BoardManager {
 
 	private boolean isKingInCheck(Color kingColor) {
 		
+		ArrayList<PieceCoordinate> piecesWithCoordinates = getAllPiecesOfColor(getEnemyColor(kingColor));
+		boolean kingChecked = false;
 		
+		Coordinate to = getKingCoordinate(kingColor);
+		if(to == null){
+			return false;
+		}
 		
+		for (int i = 0; i < piecesWithCoordinates.size() && !kingChecked; i++) {
+			PieceCoordinate pc = piecesWithCoordinates.get(i);
+			Coordinate from = pc.getPosition();
+			
+			ArrayList<Path> initialPossibleCapturePaths = pc.getPiece().getCapturePaths();
+			ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,initialPossibleCapturePaths);
+			
+			if(initialPossibleCaptureCoordinates.contains(to)){
+				kingChecked = true;
+			}					
+			//validateMove(pc.getPosition(), getKingCoordinate(calculateNextMoveColor()));
+		}
 		
-
-		// TODO please add implementation here
-		return false;
+		//return false;
+		return kingChecked;
 	}
 
 	private boolean isAnyMoveValid(Color nextMoveColor) {
+		
+		ArrayList<PieceCoordinate> piecesWithCoordinates = getAllPiecesOfColor(nextMoveColor);
+		boolean anyMoveValid = false;
+		
+		for (int i = 0; i < piecesWithCoordinates.size() && !anyMoveValid; i++) {
+			
+			for(int x=0; x<Board.SIZE && !anyMoveValid; x++){
+				for(int y=0; y<Board.SIZE && !anyMoveValid; y++){
+					try {
+						Move move = validateMove(piecesWithCoordinates.get(i).getPosition(), new Coordinate(x,y));
+						if(move != null){
+							anyMoveValid = true;
+							return true;
+						}
+					} catch (KingInCheckException e) {
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
+					} catch (InvalidMoveException e) {
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
+					}
+					
+				}
+			}
+			
+			
+		}
 
-		// TODO please add implementation here
-
-		return false;
+		return anyMoveValid;
 	}
 
 	private Color calculateNextMoveColor() {
@@ -343,6 +380,14 @@ public class BoardManager {
 			return Color.WHITE;
 		} else {
 			return Color.BLACK;
+		}
+	}
+	
+	private Color getEnemyColor(Color color) {
+		if (color == Color.WHITE) {
+			return Color.BLACK;
+		} else {
+			return Color.WHITE;
 		}
 	}
 
@@ -365,8 +410,8 @@ public class BoardManager {
 			   coordinate.getY()>=0 && coordinate.getY() < board.SIZE;
 	}
 	
-	private ArrayList<Coordinate> calculateInitialPossibleMoveCoordinates(Coordinate from, Coordinate to, Piece pieceFromCoordinateFrom){
-		ArrayList<Path> initialPossibleMovePaths = pieceFromCoordinateFrom.getMovePaths();
+	private ArrayList<Coordinate> calculateInitialPossibleMoveCoordinates(Coordinate from, Coordinate to, ArrayList<Path> initialPossibleMovePaths){
+		//ArrayList<Path> initialPossibleMovePaths = pieceFromCoordinateFrom.getMovePaths();
 		ArrayList<Coordinate> initialPossibleMoveCoordinates = new ArrayList<Coordinate>();
 			
 		for(Path path: initialPossibleMovePaths){
@@ -397,8 +442,8 @@ public class BoardManager {
 		return initialPossibleMoveCoordinates;
 	}
 
-	private ArrayList<Coordinate> calculateInitialPossibleCaptureCoordinates(Coordinate from, Coordinate to, Piece pieceFromCoordinateFrom){
-		ArrayList<Path> initialPossibleCapturePaths = pieceFromCoordinateFrom.getCapturePaths();
+	private ArrayList<Coordinate> calculateInitialPossibleCaptureCoordinates(Coordinate from, Coordinate to, ArrayList<Path> initialPossibleCapturePaths){
+		//ArrayList<Path> initialPossibleCapturePaths = pieceFromCoordinateFrom.getCapturePaths();
 		ArrayList<Coordinate> initialPossibleCaptureCoordinates = new ArrayList<Coordinate>();
 			
 		for(Path path: initialPossibleCapturePaths){
@@ -433,7 +478,70 @@ public class BoardManager {
 		return initialPossibleCaptureCoordinates;
 	}
 	
-	private void getAllPiecesOfColor(){
-		board.getPieces();
+	private ArrayList<PieceCoordinate> getAllPiecesOfColor(Color color){
+		//Piece[][] wholeBoard = board.getPieces();
+		ArrayList<PieceCoordinate> piecesWithCoords = new ArrayList<PieceCoordinate>();
+		
+		for(int i=0; i<board.SIZE; i++){
+			for(int j=0; j<board.SIZE; j++){
+				Coordinate currentCoordinate = new Coordinate(i,j);
+				Piece currentPiece = board.getPieceAt(currentCoordinate);
+				if(currentPiece != null && currentPiece.getColor() == color){
+					piecesWithCoords.add(new PieceCoordinate(currentPiece,currentCoordinate));
+				}
+			}
+		}
+		return piecesWithCoords;
+	}
+	
+	private Coordinate getKingCoordinate(Color color){
+		Coordinate kingCoordinate = null;
+		
+		for(int i=0; i<board.SIZE; i++){
+			for(int j=0; j<board.SIZE; j++){
+				Coordinate currentCoordinate = new Coordinate(i,j);
+				Piece currentPiece = board.getPieceAt(currentCoordinate);
+				if(currentPiece != null && currentPiece.getType() == PieceType.KING && currentPiece.getColor() == color){
+					kingCoordinate = currentCoordinate;
+				}
+			}
+		}
+		return kingCoordinate;
+	}
+	
+	
+	
+	private void initialPieceValidation(Coordinate from, Coordinate to) throws InvalidMoveException {
+		if(!isInsideBoard(from)){
+			throw new InvalidMoveException("Incorrect start position.");
+		}
+		if(!isInsideBoard(to)){
+			throw new InvalidMoveException("Incorrect final position.");
+		}
+		Piece piece = board.getPieceAt(from);
+		if(piece == null){
+			throw new InvalidMoveException("There is no piece at the start position.");
+		}
+		if(piece.getColor() != calculateNextMoveColor()){
+			throw new InvalidMoveException("This is not your piece.");
+		}	
+	}
+	
+	private boolean moveCausesSelfCheck(Move moveToTest) throws KingInCheckException {
+		//ArrayList<Move> movesCopy = board.getMoveHistoryCopy();
+		Board newBoard = board.generateCopy();
+		//System.out.println("a");
+		//(newBoard.getMoveHistory()).add(moveToTest);
+		//movesCopy.add(moveToTest);
+		//System.out.println("b");
+		BoardManager testBoardManager = new BoardManager(newBoard);
+		testBoardManager.addMove(moveToTest);;
+		//System.out.println("c");
+		
+		if(testBoardManager.isKingInCheck(calculateNextMoveColor())){
+			throw new KingInCheckException();
+		} else {
+			return false;
+		}
 	}
 }

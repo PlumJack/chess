@@ -32,7 +32,7 @@ public abstract class Piece {
 		return color;
 	}
 	
-	protected abstract ArrayList<Coordinate> possibleStartCoordinates(Color color);
+	public abstract ArrayList<Coordinate> possibleStartCoordinates(Color color);
 	
 	public abstract ArrayList<Path> getMovePaths();
 	public abstract ArrayList<Path> getCapturePaths();

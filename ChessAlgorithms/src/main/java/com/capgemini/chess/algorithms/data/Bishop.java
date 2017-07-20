@@ -28,7 +28,7 @@ public class Bishop extends Piece {
 	}
 	
 	@Override
-	protected ArrayList<Coordinate> possibleStartCoordinates(Color color) {
+	public ArrayList<Coordinate> possibleStartCoordinates(Color color) {
 		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
 		if(color==color.BLACK){
 			possibleStartCoordinates.add(new Coordinate(2,7));
