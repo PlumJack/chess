@@ -27,4 +27,17 @@ public class Bishop extends Piece {
 		return getMovePaths();
 	}
 	
+	@Override
+	protected ArrayList<Coordinate> possibleStartCoordinates(Color color) {
+		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
+		if(color==color.BLACK){
+			possibleStartCoordinates.add(new Coordinate(2,7));
+			possibleStartCoordinates.add(new Coordinate(5,7));
+		} else {
+			possibleStartCoordinates.add(new Coordinate(2,0));
+			possibleStartCoordinates.add(new Coordinate(5,0));
+		}
+		return possibleStartCoordinates;
+	}
+	
 }

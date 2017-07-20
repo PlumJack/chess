@@ -32,6 +32,8 @@ public abstract class Piece {
 		return color;
 	}
 	
+	protected abstract ArrayList<Coordinate> possibleStartCoordinates(Color color);
+	
 	public abstract ArrayList<Path> getMovePaths();
 	public abstract ArrayList<Path> getCapturePaths();
 
@@ -58,6 +60,14 @@ public abstract class Piece {
 		if (type != other.type)
 			return false;
 		return true;
+	}
+	
+	protected void initMovedThisGame(Coordinate position){
+		if(possibleStartCoordinates(color).contains(position)){
+			movedThisGame = false;
+		} else {
+			movedThisGame = true;
+		}
 	}
 	
 	

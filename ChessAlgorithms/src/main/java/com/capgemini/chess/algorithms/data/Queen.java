@@ -26,5 +26,16 @@ public class Queen extends Piece {
 	public ArrayList<Path> getCapturePaths(){		
 		return getMovePaths();
 	}
+	
+	@Override
+	protected ArrayList<Coordinate> possibleStartCoordinates(Color color) {
+		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
+		if(color==color.BLACK){
+			possibleStartCoordinates.add(new Coordinate(3,7));
+		} else {
+			possibleStartCoordinates.add(new Coordinate(3,0));
+		}
+		return possibleStartCoordinates;
+	}
 
 }

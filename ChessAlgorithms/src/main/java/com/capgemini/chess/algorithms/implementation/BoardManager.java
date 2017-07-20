@@ -262,33 +262,8 @@ public class BoardManager {
 		if(fromCoordinateTo==null){
 			//movement
 			
-			ArrayList<Path> initialPossibleMovePaths = piece.getMovePaths();
-			ArrayList<Coordinate> initialPossibleMoveCoordinates = new ArrayList<Coordinate>();
-				
-			for(Path path: initialPossibleMovePaths){
-				Coordinate lastCoordinate = from;
-				
-				
-				boolean cancelLoop = false;
-				while(!cancelLoop){
-					Coordinate nextCoordinate = lastCoordinate.nextFromPath(path);
-					if(isInsideBoard(nextCoordinate)){
-						if(board.getPieceAt(nextCoordinate) == null){
-							
-							initialPossibleMoveCoordinates.add(nextCoordinate);
-							lastCoordinate = nextCoordinate;
-							if(!path.isRepeat()){
-								cancelLoop = true;							
-							}
-						} else {
-							cancelLoop = true;
-						}	
-					} else{
-						cancelLoop = true;
-					}
-														
-				}				
-			}	
+			//ArrayList<Path> initialPossibleMovePaths = piece.getMovePaths();
+			ArrayList<Coordinate> initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,piece);				
 			
 		//contains
 		if(initialPossibleMoveCoordinates.contains(to)){
@@ -298,13 +273,18 @@ public class BoardManager {
 			movesCopy.add(initialMove);
 			BoardManager testBoardManager = new BoardManager(movesCopy);
 			
-			if(isKingInCheck(calculateNextMoveColor())){
+			if(testBoardManager.isKingInCheck(calculateNextMoveColor())){
 				throw new KingInCheckException();
 			} else {
 				return initialMove;
 			}
 			
 		} else {
+			//doubleMove
+			//enPassant
+			//castling
+			//else:
+			
 			throw new InvalidMoveException("You can't move this piece there.");
 		}
 			
@@ -316,42 +296,7 @@ public class BoardManager {
 			} else {
 				//capture
 				ArrayList<Path> initialPossibleCapturePaths = piece.getCapturePaths();
-				ArrayList<Coordinate> initialPossibleCaptureCoordinates = new ArrayList<Coordinate>();
-					
-				for(Path path: initialPossibleCapturePaths){
-					Coordinate lastCoordinate = from;
-					
-					
-					boolean cancelLoop = false;
-					while(!cancelLoop){
-						Coordinate nextCoordinate = lastCoordinate.nextFromPath(path);
-						if(isInsideBoard(nextCoordinate)){
-							if(board.getPieceAt(nextCoordinate) == null){
-								
-								//initialPossibleCaptureCoordinates.add(nextCoordinate);
-								lastCoordinate = nextCoordinate;
-								if(!path.isRepeat()){
-									cancelLoop = true;							
-								}
-							} else {
-								
-								if(board.getPieceAt(nextCoordinate).getColor()==calculateNextMoveColor()){
-									cancelLoop = true;
-								} else {
-									initialPossibleCaptureCoordinates.add(nextCoordinate);
-									lastCoordinate = nextCoordinate;
-									cancelLoop = true;	
-								}
-								
-								
-								
-							}	
-						} else{
-							cancelLoop = true;
-						}
-															
-					}				
-				}	
+				ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,piece);
 				
 			//contains
 			if(initialPossibleCaptureCoordinates.contains(to)){
@@ -361,7 +306,7 @@ public class BoardManager {
 				movesCopy.add(initialMove);
 				BoardManager testBoardManager = new BoardManager(movesCopy);
 				
-				if(isKingInCheck(calculateNextMoveColor())){
+				if(testBoardManager.isKingInCheck(calculateNextMoveColor())){
 					throw new KingInCheckException();
 				} else {
 					return initialMove;
@@ -377,6 +322,8 @@ public class BoardManager {
 	}
 
 	private boolean isKingInCheck(Color kingColor) {
+		
+		
 		
 		
 
@@ -417,5 +364,76 @@ public class BoardManager {
 		return coordinate.getX()>=0 && coordinate.getX() < board.SIZE &&
 			   coordinate.getY()>=0 && coordinate.getY() < board.SIZE;
 	}
+	
+	private ArrayList<Coordinate> calculateInitialPossibleMoveCoordinates(Coordinate from, Coordinate to, Piece pieceFromCoordinateFrom){
+		ArrayList<Path> initialPossibleMovePaths = pieceFromCoordinateFrom.getMovePaths();
+		ArrayList<Coordinate> initialPossibleMoveCoordinates = new ArrayList<Coordinate>();
+			
+		for(Path path: initialPossibleMovePaths){
+			Coordinate lastCoordinate = from;
+			
+			
+			boolean cancelLoop = false;
+			while(!cancelLoop){
+				Coordinate nextCoordinate = lastCoordinate.nextFromPath(path);
+				if(isInsideBoard(nextCoordinate)){
+					if(board.getPieceAt(nextCoordinate) == null){
+						
+						initialPossibleMoveCoordinates.add(nextCoordinate);
+						lastCoordinate = nextCoordinate;
+						if(!path.isRepeat()){
+							cancelLoop = true;							
+						}
+					} else {
+						cancelLoop = true;
+					}	
+				} else{
+					cancelLoop = true;
+				}
+													
+			}				
+		}	
+		
+		return initialPossibleMoveCoordinates;
+	}
 
+	private ArrayList<Coordinate> calculateInitialPossibleCaptureCoordinates(Coordinate from, Coordinate to, Piece pieceFromCoordinateFrom){
+		ArrayList<Path> initialPossibleCapturePaths = pieceFromCoordinateFrom.getCapturePaths();
+		ArrayList<Coordinate> initialPossibleCaptureCoordinates = new ArrayList<Coordinate>();
+			
+		for(Path path: initialPossibleCapturePaths){
+			Coordinate lastCoordinate = from;
+			
+			
+			boolean cancelLoop = false;
+			while(!cancelLoop){
+				Coordinate nextCoordinate = lastCoordinate.nextFromPath(path);
+				if(isInsideBoard(nextCoordinate)){
+					if(board.getPieceAt(nextCoordinate) == null){
+						
+						//initialPossibleCaptureCoordinates.add(nextCoordinate);
+						lastCoordinate = nextCoordinate;
+						if(!path.isRepeat()){
+							cancelLoop = true;							
+						}
+					} else {		
+						if(board.getPieceAt(nextCoordinate).getColor()==calculateNextMoveColor()){
+							cancelLoop = true;
+						} else {
+							initialPossibleCaptureCoordinates.add(nextCoordinate);
+							lastCoordinate = nextCoordinate;
+							cancelLoop = true;	
+						}				
+					}	
+				} else{
+					cancelLoop = true;
+				}												
+			}				
+		}	
+		return initialPossibleCaptureCoordinates;
+	}
+	
+	private void getAllPiecesOfColor(){
+		board.getPieces();
+	}
 }

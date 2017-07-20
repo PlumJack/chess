@@ -29,5 +29,17 @@ public class Knight extends Piece {
 	public ArrayList<Path> getCapturePaths(){		
 		return getMovePaths();
 	}
+	
+	protected ArrayList<Coordinate> possibleStartCoordinates(Color color) {
+		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
+		if(color==color.BLACK){
+			possibleStartCoordinates.add(new Coordinate(1,7));
+			possibleStartCoordinates.add(new Coordinate(6,7));
+		} else {
+			possibleStartCoordinates.add(new Coordinate(1,0));
+			possibleStartCoordinates.add(new Coordinate(6,0));
+		}
+		return possibleStartCoordinates;
+	}
 
 }

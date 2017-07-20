@@ -27,5 +27,26 @@ public class King extends Piece {
 	public ArrayList<Path> getCapturePaths(){		
 		return getMovePaths();
 	}
+	
+	public ArrayList<Path> getCastlingPaths(){
+		ArrayList<Path> paths = new ArrayList<Path>();
+		
+		paths.add(new Path(-2,0,false));
+		paths.add(new Path(2,0,false));
+		
+		return paths;
+	}
+	
+
+	@Override
+	protected ArrayList<Coordinate> possibleStartCoordinates(Color color) {
+		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
+		if(color==color.BLACK){
+			possibleStartCoordinates.add(new Coordinate(4,7));
+		} else {
+			possibleStartCoordinates.add(new Coordinate(4,0));
+		}
+		return possibleStartCoordinates;
+	}
 
 }

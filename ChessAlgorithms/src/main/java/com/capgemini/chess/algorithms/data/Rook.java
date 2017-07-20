@@ -26,4 +26,15 @@ public class Rook extends Piece {
 		return getMovePaths();
 	}
 
+	protected ArrayList<Coordinate> possibleStartCoordinates(Color color) {
+		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
+		if(color==color.BLACK){
+			possibleStartCoordinates.add(new Coordinate(0,7));
+			possibleStartCoordinates.add(new Coordinate(7,7));
+		} else {
+			possibleStartCoordinates.add(new Coordinate(0,0));
+			possibleStartCoordinates.add(new Coordinate(7,0));
+		}
+		return possibleStartCoordinates;
+	}
 }
