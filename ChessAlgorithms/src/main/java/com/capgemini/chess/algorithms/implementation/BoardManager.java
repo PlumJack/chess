@@ -328,13 +328,23 @@ public class BoardManager {
 						if(isInsideBoard(nextCoordinate)){
 							if(board.getPieceAt(nextCoordinate) == null){
 								
-								initialPossibleCaptureCoordinates.add(nextCoordinate);
+								//initialPossibleCaptureCoordinates.add(nextCoordinate);
 								lastCoordinate = nextCoordinate;
 								if(!path.isRepeat()){
 									cancelLoop = true;							
 								}
 							} else {
-								cancelLoop = true;
+								
+								if(board.getPieceAt(nextCoordinate).getColor()==calculateNextMoveColor()){
+									cancelLoop = true;
+								} else {
+									initialPossibleCaptureCoordinates.add(nextCoordinate);
+									lastCoordinate = nextCoordinate;
+									cancelLoop = true;	
+								}
+								
+								
+								
 							}	
 						} else{
 							cancelLoop = true;
