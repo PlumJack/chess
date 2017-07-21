@@ -63,15 +63,5 @@ public abstract class Piece {
 			return false;
 		return true;
 	}
-	/*
-	protected void initMovedThisGame(Coordinate position){
-		if(possibleStartCoordinates(color).contains(position)){
-			movedThisGame = false;
-		} else {
-			movedThisGame = true;
-		}
-	}
-	*/
-	
 	
 }

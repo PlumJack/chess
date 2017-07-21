@@ -21,29 +21,11 @@ public class King extends Piece {
 				if(i!=0 || j !=0) paths.add(new Path(i,j,false));
 			}
 		}
-		//paths.add(new Path(-2,0,false));
-		//paths.add(new Path(2,0,false));
 		return paths;
 	}
 	
 	public ArrayList<Path> getCapturePaths(){		
 		return getMovePaths();
-	}
-	
-	public ArrayList<Path> getKingSideCastlingPaths(){
-		ArrayList<Path> paths = new ArrayList<Path>();
-
-		paths.add(new Path(2,0,false));
-		
-		return paths;
-	}
-	
-	public ArrayList<Path> getQueenSideCastlingPaths(){
-		ArrayList<Path> paths = new ArrayList<Path>();
-		
-		paths.add(new Path(-2,0,false));
-		
-		return paths;
 	}
 	
 	public ArrayList<Path> getCastlingPaths(){
@@ -58,7 +40,7 @@ public class King extends Piece {
 	@Override
 	public ArrayList<Coordinate> possibleStartCoordinates(Color color) {
 		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
-		if(color==color.BLACK){
+		if(color==Color.BLACK){
 			possibleStartCoordinates.add(new Coordinate(4,7));
 		} else {
 			possibleStartCoordinates.add(new Coordinate(4,0));

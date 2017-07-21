@@ -34,7 +34,7 @@ public class Knight extends Piece {
 	
 	public ArrayList<Coordinate> possibleStartCoordinates(Color color) {
 		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
-		if(color==color.BLACK){
+		if(color==Color.BLACK){
 			possibleStartCoordinates.add(new Coordinate(1,7));
 			possibleStartCoordinates.add(new Coordinate(6,7));
 		} else {

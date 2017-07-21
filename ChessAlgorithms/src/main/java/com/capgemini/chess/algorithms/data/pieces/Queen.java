@@ -32,7 +32,7 @@ public class Queen extends Piece {
 	@Override
 	public ArrayList<Coordinate> possibleStartCoordinates(Color color) {
 		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
-		if(color==color.BLACK){
+		if(color==Color.BLACK){
 			possibleStartCoordinates.add(new Coordinate(3,7));
 		} else {
 			possibleStartCoordinates.add(new Coordinate(3,0));

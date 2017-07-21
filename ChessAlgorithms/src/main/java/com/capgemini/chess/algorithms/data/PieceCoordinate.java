@@ -5,8 +5,8 @@ import com.capgemini.chess.algorithms.data.pieces.Piece;
 
 public class PieceCoordinate {
 	
-	Piece piece;
-	Coordinate position;
+	private Piece piece;
+	private Coordinate position;
 	
 	public PieceCoordinate(Piece piece, Coordinate position) {
 		this.piece = piece;

@@ -23,11 +23,6 @@ public class Pawn extends Piece {
 		}
 		paths.add(new Path(0,1*colorModifier,false));
 		
-		/*
-		if(!movedThisGame) {
-			paths.add(new Path(0,2*colorModifier,false));
-		}
-		*/
 		return paths;
 	}
 	
@@ -67,7 +62,7 @@ public class Pawn extends Piece {
 	@Override
 	public ArrayList<Coordinate> possibleStartCoordinates(Color color) {
 		ArrayList<Coordinate> possibleStartCoordinates = new ArrayList<Coordinate>();
-		if(color==color.BLACK){
+		if(color==Color.BLACK){
 			for (int x = 0; x < 8; x++) {
 				possibleStartCoordinates.add(new Coordinate(x, 6));
 			}

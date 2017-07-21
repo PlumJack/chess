@@ -46,7 +46,6 @@ public class BoardManager {
 
 	public BoardManager(Board board) {
 		this.board = board;
-		//this.board = board.generateCopy();
 	}
 
 	/**
@@ -144,8 +143,6 @@ public class BoardManager {
 	 */
 	public boolean checkFiftyMoveRule() {
 
-		// for this purpose a "move" consists of a player completing his turn
-		// followed by his opponent completing his turn
 		if (this.board.getMoveHistory().size() < 100) {
 			return false;
 		}

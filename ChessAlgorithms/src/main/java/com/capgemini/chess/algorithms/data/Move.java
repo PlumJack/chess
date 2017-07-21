@@ -16,8 +16,7 @@ public class Move {
 	private MoveType type;
 	private Piece movedPiece;	
 	
-	public Move(){
-		
+	public Move(){	
 	}
 
 	public Move(Coordinate from, Coordinate to, MoveType type, Piece movedPiece) {
