@@ -117,8 +117,6 @@ public class BoardManager {
 	 */
 	public boolean checkThreefoldRepetitionRule() {
 
-		// there is no need to check moves that where before last capture/en
-		// passant/castling
 		int lastNonAttackMoveIndex = findLastNonAttackMoveIndex();
 		List<Move> omittedMoves = this.board.getMoveHistory().subList(0, lastNonAttackMoveIndex);
 		BoardManager simulatedBoardManager = new BoardManager(omittedMoves);
@@ -163,8 +161,6 @@ public class BoardManager {
 		return true;
 	}
 
-	// PRIVATE
-
 	private void initBoard() {
 
 		this.board.setPieceAt(new Rook(Color.BLACK), new Coordinate(0, 7));
@@ -204,8 +200,10 @@ public class BoardManager {
 			addEnPassant(move);
 		}
 		
-		//move.getMovedPiece().setMovedThisGame(true);
-
+		if(move.getMovedPiece()!=null){
+			move.getMovedPiece().setMovedThisGame(true);
+		}
+		
 		this.board.getMoveHistory().add(move);
 	}
 
@@ -240,7 +238,7 @@ public class BoardManager {
 			this.board.setPieceAt(null, new Coordinate(Board.SIZE - 1, move.getFrom().getY()));
 			this.board.setPieceAt(rook, new Coordinate(move.getTo().getX() - 1, move.getTo().getY()));
 		}
-		//rook.setMovedThisGame(true);
+		rook.setMovedThisGame(true);
 	}
 
 	private void addEnPassant(Move move) {
@@ -252,127 +250,15 @@ public class BoardManager {
 
 		initialPieceValidation(from,to);
 		
-		Piece piece = board.getPieceAt(from);
 		Piece fromCoordinateTo = board.getPieceAt(to);
 		
-		if(fromCoordinateTo==null){
-			//movement
-			
-			ArrayList<Path> initialPossibleMovePaths = piece.getMovePaths();
-			//ArrayList<Path> initialPossibleMovePaths = pieceFromCoordinateFrom.getMovePaths();
-			ArrayList<Coordinate> initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);				
-			
-		//contains
-			Move initialMove;
-		if(initialPossibleMoveCoordinates.contains(to)){
-			initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));
-			
-			if(!moveCausesSelfCheck(initialMove)){
-				return initialMove;
-			}
-			
-		} else {
-			if(piece.getType()==PieceType.PAWN){
-				//doubleMove
-				Pawn pawn = ((Pawn)piece);
-				
-				if(piece.isMovedThisGame()==false){
-					//Pawn pawn = ((Pawn)piece);
-					if(pawn.possibleStartCoordinates(calculateNextMoveColor()).contains(from)){
-						initialPossibleMovePaths = pawn.getDoubleMovePaths();
-						initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);
-						if(initialPossibleMoveCoordinates.size()==2){
-							initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));
-							
-							if(!moveCausesSelfCheck(initialMove)){
-								return initialMove;
-							}
-						}	
-					}
-					
-				}
-
-				//enPassant
-				if(board.getMoveHistory().size()>0){
-					Move lastMove = this.board.getMoveHistory().get(this.board.getMoveHistory().size() - 1);
-					if(lastMove.getMovedPiece().getType() == PieceType.PAWN){
-						if(Math.abs((lastMove.getTo().getY()-lastMove.getFrom().getY())) == 2){
-							if(board.getPieceAt(to)==null){
-								if(Math.abs((lastMove.getTo().getX()-from.getX())) == 1){
-									if(to.getX() == lastMove.getTo().getX() && to.getY()==(lastMove.getTo().getY()+lastMove.getFrom().getY())/2){
-										initialMove = new Move(from,to,MoveType.EN_PASSANT,board.getPieceAt(from));
-										if(!moveCausesSelfCheck(initialMove)){
-											return initialMove;
-										}
-									}
-								}
-							}				
-						}
-					}
-				}	
-				
-				/*
-				initialPossibleMovePaths = pawn.getDoubleMovePaths();
-				initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);
-				*/			
-				
-				/*
-				 * if(board.getMoveHistory().size()>0){
-					Move lastMove = this.board.getMoveHistory().get(this.board.getMoveHistory().size() - 1);
-					if(lastMove.getMovedPiece().getType() == PieceType.PAWN){
-						if(Math.abs((lastMove.getTo().getY()-lastMove.getFrom().getY())) == 2){
-							if(board.getPieceAt(to)==null){
-								if(Math.abs((lastMove.getTo().getX()-from.getX())) == 1){
-									if(to.getX() == lastMove.getTo().getX() && to.getY()==(lastMove.getTo().getY()+lastMove.getFrom().getY())/2){
-										Move enPassant = new Move(from,to,MoveType.EN_PASSANT,board.getPieceAt(from));
-										return enPassant;
-									}
-								}
-							}				
-						}
-					}
-				}
-				 */
-				
-			} 
-			
-			
-			if (piece.getType()==PieceType.KING){
-				
-				if(validateCastling(from, to)){
-					return new Move(from,to,MoveType.CASTLING,board.getPieceAt(from));
-				}	
-			}
-			
-			
-			
-			
-			//castling
-			//else:
-			
-			throw new InvalidMoveException("You can't move this piece there.");
-		}		
-		} else {
-			// failed capture
-			if (fromCoordinateTo.getColor()==calculateNextMoveColor()){
-				throw new InvalidMoveException("You can't capture your own pieces.");
-			} else {
-				//capture
-				ArrayList<Path> initialPossibleCapturePaths = piece.getCapturePaths();
-				//ArrayList<Path> initialPossibleCapturePaths = pieceFromCoordinateFrom.getCapturePaths();
-				ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,initialPossibleCapturePaths,calculateNextMoveColor());
-				
-				//contains
-				if(initialPossibleCaptureCoordinates.contains(to)){
-					Move initialMove = new Move(from,to,MoveType.CAPTURE,board.getPieceAt(from));
-				
-					if(!moveCausesSelfCheck(initialMove)){
-						return initialMove;
-					}			
-				//capture end
-				}
-			}	
-			
+		if(fromCoordinateTo==null){			
+			return checkForMovementMove(from, to);		
+		} else {		
+			if(validateCapture(from,to)){
+				Move initialMove = new Move(from,to,MoveType.CAPTURE,board.getPieceAt(from));
+				return checkForSelfCheck(initialMove);
+			}			
 		}
 		
 		throw new InvalidMoveException("Something went wrong.");
@@ -385,8 +271,7 @@ public class BoardManager {
 			return false;
 		}
 		
-		return isFieldUnderAttack(to, getEnemyColor(kingColor));
-		
+		return isFieldUnderAttack(to, getEnemyColor(kingColor));		
 	}
 
 	private boolean isAnyMoveValid(Color nextMoveColor) {
@@ -405,17 +290,12 @@ public class BoardManager {
 							return true;
 						}
 					} catch (KingInCheckException e) {
-						// TODO Auto-generated catch block
-						//e.printStackTrace();
+						continue;
 					} catch (InvalidMoveException e) {
-						// TODO Auto-generated catch block
-						//e.printStackTrace();
-					}
-					
+						continue;
+					}				
 				}
-			}
-			
-			
+			}			
 		}
 
 		return anyMoveValid;
@@ -452,24 +332,21 @@ public class BoardManager {
 	}
 	
 	private boolean isInsideBoard(Coordinate coordinate){
-		return coordinate.getX()>=0 && coordinate.getX() < board.SIZE &&
-			   coordinate.getY()>=0 && coordinate.getY() < board.SIZE;
+		return coordinate.getX()>=0 && coordinate.getX() < Board.SIZE &&
+			   coordinate.getY()>=0 && coordinate.getY() < Board.SIZE;
 	}
 	
 	private ArrayList<Coordinate> calculateInitialPossibleMoveCoordinates(Coordinate from, Coordinate to, ArrayList<Path> initialPossibleMovePaths){
-		//ArrayList<Path> initialPossibleMovePaths = pieceFromCoordinateFrom.getMovePaths();
 		ArrayList<Coordinate> initialPossibleMoveCoordinates = new ArrayList<Coordinate>();
 			
 		for(Path path: initialPossibleMovePaths){
 			Coordinate lastCoordinate = from;
-			
-			
+				
 			boolean cancelLoop = false;
 			while(!cancelLoop){
 				Coordinate nextCoordinate = lastCoordinate.nextFromPath(path);
 				if(isInsideBoard(nextCoordinate)){
-					if(board.getPieceAt(nextCoordinate) == null){
-						
+					if(board.getPieceAt(nextCoordinate) == null){				
 						initialPossibleMoveCoordinates.add(nextCoordinate);
 						lastCoordinate = nextCoordinate;
 						if(!path.isRepeat()){
@@ -480,36 +357,32 @@ public class BoardManager {
 					}	
 				} else{
 					cancelLoop = true;
-				}
-													
+				}												
 			}				
 		}	
 		
 		return initialPossibleMoveCoordinates;
 	}
 
-	private ArrayList<Coordinate> calculateInitialPossibleCaptureCoordinates(Coordinate from, Coordinate to, ArrayList<Path> initialPossibleCapturePaths, Color attackerColor){
-		//ArrayList<Path> initialPossibleCapturePaths = pieceFromCoordinateFrom.getCapturePaths();
+	private ArrayList<Coordinate> calculateInitialPossibleCaptureCoordinates
+	(Coordinate from, Coordinate to, ArrayList<Path> initialPossibleCapturePaths, Color attackerColor){
+		
 		ArrayList<Coordinate> initialPossibleCaptureCoordinates = new ArrayList<Coordinate>();
 			
 		for(Path path: initialPossibleCapturePaths){
 			Coordinate lastCoordinate = from;
-			
-			
+					
 			boolean cancelLoop = false;
 			while(!cancelLoop){
 				Coordinate nextCoordinate = lastCoordinate.nextFromPath(path);
 				if(isInsideBoard(nextCoordinate)){
 					if(board.getPieceAt(nextCoordinate) == null){
-						
-						//initialPossibleCaptureCoordinates.add(nextCoordinate);
 						lastCoordinate = nextCoordinate;
 						if(!path.isRepeat()){
 							cancelLoop = true;							
 						}
 					} else {	
 						if(board.getPieceAt(nextCoordinate).getColor()==attackerColor){
-						//if(board.getPieceAt(nextCoordinate).getColor()==calculateNextMoveColor()){
 							cancelLoop = true;
 						} else {
 							initialPossibleCaptureCoordinates.add(nextCoordinate);
@@ -526,11 +399,10 @@ public class BoardManager {
 	}
 	
 	private ArrayList<PieceCoordinate> getAllPiecesOfColor(Color color){
-		//Piece[][] wholeBoard = board.getPieces();
 		ArrayList<PieceCoordinate> piecesWithCoords = new ArrayList<PieceCoordinate>();
 		
-		for(int i=0; i<board.SIZE; i++){
-			for(int j=0; j<board.SIZE; j++){
+		for(int i=0; i<Board.SIZE; i++){
+			for(int j=0; j<Board.SIZE; j++){
 				Coordinate currentCoordinate = new Coordinate(i,j);
 				Piece currentPiece = board.getPieceAt(currentCoordinate);
 				if(currentPiece != null && currentPiece.getColor() == color){
@@ -544,8 +416,8 @@ public class BoardManager {
 	private Coordinate getKingCoordinate(Color color){
 		Coordinate kingCoordinate = null;
 		
-		for(int i=0; i<board.SIZE; i++){
-			for(int j=0; j<board.SIZE; j++){
+		for(int i=0; i<Board.SIZE; i++){
+			for(int j=0; j<Board.SIZE; j++){
 				Coordinate currentCoordinate = new Coordinate(i,j);
 				Piece currentPiece = board.getPieceAt(currentCoordinate);
 				if(currentPiece != null && currentPiece.getType() == PieceType.KING && currentPiece.getColor() == color){
@@ -555,8 +427,6 @@ public class BoardManager {
 		}
 		return kingCoordinate;
 	}
-	
-	
 	
 	private void initialPieceValidation(Coordinate from, Coordinate to) throws InvalidMoveException {
 		if(!isInsideBoard(from)){
@@ -574,19 +444,13 @@ public class BoardManager {
 		}	
 	}
 	
-	private boolean moveCausesSelfCheck(Move moveToTest) throws KingInCheckException {
-		//ArrayList<Move> movesCopy = board.getMoveHistoryCopy();
+	private boolean moveCausesSelfCheck(Move moveToTest){
 		Board newBoard = board.generateCopy();
-		//System.out.println("a");
-		//(newBoard.getMoveHistory()).add(moveToTest);
-		//movesCopy.add(moveToTest);
-		//System.out.println("b");
 		BoardManager testBoardManager = new BoardManager(newBoard);
 		testBoardManager.addMove(moveToTest);
-		//System.out.println("c");
 		
 		if(testBoardManager.isKingInCheck(calculateNextMoveColor())){
-			throw new KingInCheckException();
+			return true;
 		} else {
 			return false;
 		}
@@ -594,7 +458,6 @@ public class BoardManager {
 	
 	private boolean validateCastling(Coordinate kingStart, Coordinate kingDestination){
 		
-		//boolean validCastling = false;
 		King king = ((King)board.getPieceAt(kingStart));
 		
 		if(isKingInCheck(calculateNextMoveColor())){
@@ -604,8 +467,7 @@ public class BoardManager {
 		if(king.isMovedThisGame()){
 			return false;
 		}
-		
-		
+				
 		ArrayList<Path> initialPossibleCastlingPaths = king.getCastlingPaths();
 		ArrayList<Coordinate> initialPossibleCastlingCoordinates = 
 				calculateInitialPossibleMoveCoordinates(kingStart, kingDestination, initialPossibleCastlingPaths);
@@ -622,7 +484,6 @@ public class BoardManager {
 			rookX= Board.SIZE-1;	
 			direction = 1;
 		}
-		
 		
 		if(king.getColor() == Color.BLACK){
 			rookY = Board.SIZE-1;
@@ -651,12 +512,6 @@ public class BoardManager {
 			return false;
 		}
 		
-		if(isFieldUnderAttack(new Coordinate(kingDestination.getX(),rookY),getEnemyColor(king.getColor()))){
-			return false;
-		}
-		
-
-		//return validCastling;
 		return true;
 	}
 	
@@ -691,13 +546,126 @@ public class BoardManager {
 			if(coordinates.contains(field)){
 				fieldAttacked = true;
 			}					
-			//validateMove(pc.getPosition(), getKingCoordinate(calculateNextMoveColor()));
+
 		}	
 		
-		
-		
-		
-		//return false;
 		return fieldAttacked;
 	}
+	
+	private boolean validateEnPassant(Coordinate from, Coordinate to){
+		if(board.getMoveHistory().size()==0){
+			return false;
+		}
+		
+		Move lastMove = this.board.getMoveHistory().get(this.board.getMoveHistory().size() - 1);
+		if(lastMove.getMovedPiece().getType() != PieceType.PAWN){
+			return false;
+		}
+			
+		if(Math.abs((lastMove.getTo().getY()-lastMove.getFrom().getY())) != 2){
+			return false;			
+		}
+		
+		if(board.getPieceAt(to)!=null){
+			return false;
+		}	
+		
+		if(Math.abs((lastMove.getTo().getX()-from.getX())) != 1){
+			return false;
+		}
+		
+		if(!(to.getX() == lastMove.getTo().getX() && to.getY()==(lastMove.getTo().getY()+lastMove.getFrom().getY())/2)){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private boolean validatePawnDoubleMove(Coordinate from, Coordinate to){
+		
+		Piece piece = board.getPieceAt(from);
+		Pawn pawn = ((Pawn)piece);
+		
+		if(piece.isMovedThisGame()){
+			return false;		
+		}
+		
+		if(!pawn.possibleStartCoordinates(calculateNextMoveColor()).contains(from)){
+			return false;
+		}
+		
+		ArrayList<Path> initialPossibleMovePaths = pawn.getDoubleMovePaths();
+		ArrayList<Coordinate> initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);
+		if(initialPossibleMoveCoordinates.size()!=2){
+			return false;
+		}	
+				
+		return true;
+	}
+	
+	private Move checkForSelfCheck(Move moveToCheck) throws KingInCheckException{
+		if(moveCausesSelfCheck(moveToCheck)){
+			throw new KingInCheckException();
+		} else {
+			return moveToCheck;	
+		}
+	}
+	
+	private boolean validateCapture(Coordinate from, Coordinate to) throws InvalidMoveException{
+		Piece fromCoordinateTo = board.getPieceAt(to);
+		if (fromCoordinateTo.getColor()==calculateNextMoveColor()){
+			throw new InvalidMoveException("You can't capture your own pieces.");
+		} else {
+			Piece piece = board.getPieceAt(from);
+			ArrayList<Path> initialPossibleCapturePaths = piece.getCapturePaths();
+			ArrayList<Coordinate> initialPossibleCaptureCoordinates = 
+					calculateInitialPossibleCaptureCoordinates(from,to,initialPossibleCapturePaths,calculateNextMoveColor());
+			
+			if(initialPossibleCaptureCoordinates.contains(to)){
+				return true;
+			} else {
+				return false;
+			}
+		}	
+	}
+	
+	private boolean validateNormalMovement(Coordinate from, Coordinate to) {
+		Piece piece = board.getPieceAt(from);
+		ArrayList<Path> initialPossibleMovePaths = piece.getMovePaths();
+		ArrayList<Coordinate> initialPossibleMoveCoordinates = 
+				calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);				
+
+		if(initialPossibleMoveCoordinates.contains(to)){	
+			return true;		
+		}
+		return false;
+	}
+	
+	private Move checkForMovementMove(Coordinate from, Coordinate to) throws InvalidMoveException, KingInCheckException{
+		if(validateNormalMovement(from,to)){
+			Move initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));			
+			return checkForSelfCheck(initialMove);				
+		} else {
+			Piece piece = board.getPieceAt(from);
+			if(piece.getType()==PieceType.PAWN){
+				if(validatePawnDoubleMove(from,to)){
+					Move initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));
+					return checkForSelfCheck(initialMove);
+				}
+				
+				if(validateEnPassant(from, to)){
+					Move initialMove = new Move(from,to,MoveType.EN_PASSANT,board.getPieceAt(from));
+					return checkForSelfCheck(initialMove);
+				}		
+			} 						
+			if (piece.getType()==PieceType.KING){	
+				if(validateCastling(from, to)){
+					Move initialMove = new Move(from,to,MoveType.CASTLING,board.getPieceAt(from));
+					return checkForSelfCheck(initialMove);
+				}	
+			}		
+			throw new InvalidMoveException("You can't move this piece there.");
+		}	
+	}
+	
 }
