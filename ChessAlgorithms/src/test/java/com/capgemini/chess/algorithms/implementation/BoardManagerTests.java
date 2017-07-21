@@ -29,7 +29,7 @@ import com.capgemini.chess.algorithms.implementation.exceptions.KingInCheckExcep
  * @author Michal Bejm
  *
  */
-public class BoardManagerTest {
+public class BoardManagerTests {
 
 	@Test
 	public void testGenerateBoardInitialPosition() {
