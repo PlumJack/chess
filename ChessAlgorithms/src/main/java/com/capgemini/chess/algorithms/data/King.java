@@ -36,7 +36,6 @@ public class King extends Piece {
 		
 		return paths;
 	}
-	
 
 	@Override
 	public ArrayList<Coordinate> possibleStartCoordinates(Color color) {

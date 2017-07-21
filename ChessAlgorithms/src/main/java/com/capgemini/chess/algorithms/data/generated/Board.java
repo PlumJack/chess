@@ -57,6 +57,17 @@ public class Board {
 	 * @param coordinate given coordinates
 	 */
 	public void setPieceAt(Piece piece, Coordinate coordinate) {
+		
+		if(piece!=null){
+			ArrayList<Coordinate> possibleStartCoordinates = piece.possibleStartCoordinates(piece.getColor());
+			
+			if(!possibleStartCoordinates.contains(coordinate)){
+				piece.setMovedThisGame(true);
+			}
+		}
+		
+		
+		
 		pieces[coordinate.getX()][coordinate.getY()] = piece;
 	}
 	

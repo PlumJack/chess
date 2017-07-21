@@ -203,12 +203,15 @@ public class BoardManager {
 		} else if (move.getType() == MoveType.EN_PASSANT) {
 			addEnPassant(move);
 		}
+		
+		//move.getMovedPiece().setMovedThisGame(true);
 
 		this.board.getMoveHistory().add(move);
 	}
 
 	private void addRegularMove(Move move) {
 		Piece movedPiece = this.board.getPieceAt(move.getFrom());
+		movedPiece.setMovedThisGame(true);		
 		this.board.setPieceAt(null, move.getFrom());
 		this.board.setPieceAt(movedPiece, move.getTo());
 
@@ -227,15 +230,17 @@ public class BoardManager {
 	}
 
 	private void addCastling(Move move) {
+		Piece rook;
 		if (move.getFrom().getX() > move.getTo().getX()) {
-			Piece rook = this.board.getPieceAt(new Coordinate(0, move.getFrom().getY()));
+			rook = this.board.getPieceAt(new Coordinate(0, move.getFrom().getY()));
 			this.board.setPieceAt(null, new Coordinate(0, move.getFrom().getY()));
 			this.board.setPieceAt(rook, new Coordinate(move.getTo().getX() + 1, move.getTo().getY()));
 		} else {
-			Piece rook = this.board.getPieceAt(new Coordinate(Board.SIZE - 1, move.getFrom().getY()));
+			rook = this.board.getPieceAt(new Coordinate(Board.SIZE - 1, move.getFrom().getY()));
 			this.board.setPieceAt(null, new Coordinate(Board.SIZE - 1, move.getFrom().getY()));
 			this.board.setPieceAt(rook, new Coordinate(move.getTo().getX() - 1, move.getTo().getY()));
 		}
+		//rook.setMovedThisGame(true);
 	}
 
 	private void addEnPassant(Move move) {
@@ -267,24 +272,76 @@ public class BoardManager {
 			}
 			
 		} else {
-			//doubleMove
-			if(piece.getType()==PieceType.PAWN && piece.isMovedThisGame()==false){
+			if(piece.getType()==PieceType.PAWN){
+				//doubleMove
 				Pawn pawn = ((Pawn)piece);
-				if(pawn.possibleStartCoordinates(calculateNextMoveColor()).contains(from)){
-					initialPossibleMovePaths = pawn.getDoubleMovePaths();
-					initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);
-					if(initialPossibleMoveCoordinates.size()==2){
-						initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));
-						
-						if(!moveCausesSelfCheck(initialMove)){
-							return initialMove;
-						}
-					}	
-				}
 				
-			}
+				if(piece.isMovedThisGame()==false){
+					//Pawn pawn = ((Pawn)piece);
+					if(pawn.possibleStartCoordinates(calculateNextMoveColor()).contains(from)){
+						initialPossibleMovePaths = pawn.getDoubleMovePaths();
+						initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);
+						if(initialPossibleMoveCoordinates.size()==2){
+							initialMove = new Move(from,to,MoveType.MOVEMENT,board.getPieceAt(from));
+							
+							if(!moveCausesSelfCheck(initialMove)){
+								return initialMove;
+							}
+						}	
+					}
+					
+				}
+
+				//enPassant
+				if(board.getMoveHistory().size()>0){
+					Move lastMove = this.board.getMoveHistory().get(this.board.getMoveHistory().size() - 1);
+					if(lastMove.getMovedPiece().getType() == PieceType.PAWN){
+						if(Math.abs((lastMove.getTo().getY()-lastMove.getFrom().getY())) == 2){
+							if(board.getPieceAt(to)==null){
+								if(Math.abs((lastMove.getTo().getX()-from.getX())) == 1){
+									if(to.getX() == lastMove.getTo().getX() && to.getY()==(lastMove.getTo().getY()+lastMove.getFrom().getY())/2){
+										initialMove = new Move(from,to,MoveType.EN_PASSANT,board.getPieceAt(from));
+										if(!moveCausesSelfCheck(initialMove)){
+											return initialMove;
+										}
+									}
+								}
+							}				
+						}
+					}
+				}	
+				
+				/*
+				initialPossibleMovePaths = pawn.getDoubleMovePaths();
+				initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);
+				*/
+				
+				
+				/*
+				 * if(board.getMoveHistory().size()>0){
+					Move lastMove = this.board.getMoveHistory().get(this.board.getMoveHistory().size() - 1);
+					if(lastMove.getMovedPiece().getType() == PieceType.PAWN){
+						if(Math.abs((lastMove.getTo().getY()-lastMove.getFrom().getY())) == 2){
+							if(board.getPieceAt(to)==null){
+								if(Math.abs((lastMove.getTo().getX()-from.getX())) == 1){
+									if(to.getX() == lastMove.getTo().getX() && to.getY()==(lastMove.getTo().getY()+lastMove.getFrom().getY())/2){
+										Move enPassant = new Move(from,to,MoveType.EN_PASSANT,board.getPieceAt(from));
+										return enPassant;
+									}
+								}
+							}				
+						}
+					}
+				}
+				 */
+				
+			} //else if (piece.getType()==PieceType.KING){
+				
+			//}
 			
-			//enPassant
+			
+			
+			
 			//castling
 			//else:
 			
@@ -298,7 +355,7 @@ public class BoardManager {
 				//capture
 				ArrayList<Path> initialPossibleCapturePaths = piece.getCapturePaths();
 				//ArrayList<Path> initialPossibleCapturePaths = pieceFromCoordinateFrom.getCapturePaths();
-				ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,initialPossibleCapturePaths);
+				ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,initialPossibleCapturePaths,calculateNextMoveColor());
 				
 				//contains
 				if(initialPossibleCaptureCoordinates.contains(to)){
@@ -331,7 +388,7 @@ public class BoardManager {
 			Coordinate from = pc.getPosition();
 			
 			ArrayList<Path> initialPossibleCapturePaths = pc.getPiece().getCapturePaths();
-			ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,initialPossibleCapturePaths);
+			ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,initialPossibleCapturePaths,getEnemyColor(kingColor));
 			
 			if(initialPossibleCaptureCoordinates.contains(to)){
 				kingChecked = true;
@@ -442,7 +499,7 @@ public class BoardManager {
 		return initialPossibleMoveCoordinates;
 	}
 
-	private ArrayList<Coordinate> calculateInitialPossibleCaptureCoordinates(Coordinate from, Coordinate to, ArrayList<Path> initialPossibleCapturePaths){
+	private ArrayList<Coordinate> calculateInitialPossibleCaptureCoordinates(Coordinate from, Coordinate to, ArrayList<Path> initialPossibleCapturePaths, Color attackerColor){
 		//ArrayList<Path> initialPossibleCapturePaths = pieceFromCoordinateFrom.getCapturePaths();
 		ArrayList<Coordinate> initialPossibleCaptureCoordinates = new ArrayList<Coordinate>();
 			
@@ -461,8 +518,9 @@ public class BoardManager {
 						if(!path.isRepeat()){
 							cancelLoop = true;							
 						}
-					} else {		
-						if(board.getPieceAt(nextCoordinate).getColor()==calculateNextMoveColor()){
+					} else {	
+						if(board.getPieceAt(nextCoordinate).getColor()==attackerColor){
+						//if(board.getPieceAt(nextCoordinate).getColor()==calculateNextMoveColor()){
 							cancelLoop = true;
 						} else {
 							initialPossibleCaptureCoordinates.add(nextCoordinate);
