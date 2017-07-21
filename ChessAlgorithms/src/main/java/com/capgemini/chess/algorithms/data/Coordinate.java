@@ -16,14 +16,6 @@ public class Coordinate {
 		this.y = y;
 	}
 
-	public int getX() {
-		return x;
-	}
-
-	public int getY() {
-		return y;
-	}
-	
 	public Coordinate nextFromPath(Path path){
 		return new Coordinate(x+path.getX(),y+path.getY());
 	}
@@ -52,4 +44,13 @@ public class Coordinate {
 			return false;
 		return true;
 	}
+	
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+	
 }

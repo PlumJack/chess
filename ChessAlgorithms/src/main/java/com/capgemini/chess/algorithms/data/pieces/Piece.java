@@ -13,29 +13,12 @@ public abstract class Piece {
     protected final Color color;
     protected boolean movedThisGame;
 
-    public boolean isMovedThisGame() {
-		return movedThisGame;
-	}
-
-	public void setMovedThisGame(boolean movedThisGame) {
-		this.movedThisGame = movedThisGame;
-	}
-
 	Piece(PieceType type, Color color) {
         this.type = type;
         this.color = color;
     }
 
-	public PieceType getType() {
-		return type;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-	
 	public abstract ArrayList<Coordinate> possibleStartCoordinates(Color color);
-	
 	public abstract ArrayList<Path> getMovePaths();
 	public abstract ArrayList<Path> getCapturePaths();
 
@@ -62,6 +45,22 @@ public abstract class Piece {
 		if (type != other.type)
 			return false;
 		return true;
+	}
+	
+	public PieceType getType() {
+		return type;
+	}
+
+	public Color getColor() {
+		return color;
+	}
+	
+	public boolean isMovedThisGame() {
+		return movedThisGame;
+	}
+
+	public void setMovedThisGame(boolean movedThisGame) {
+		this.movedThisGame = movedThisGame;
 	}
 	
 }

@@ -31,23 +31,6 @@ public class Board {
 		this.moveHistory = moveHistory;
 		this.state = state;
 	}
-
-
-	public List<Move> getMoveHistory() {
-		return moveHistory;
-	}
-
-	public Piece[][] getPieces() {
-		return pieces;
-	}
-
-	public BoardState getState() {
-		return state;
-	}
-
-	public void setState(BoardState state) {
-		this.state = state;
-	}
 	
 	/**
 	 * Sets chess piece on board based on given coordinates
@@ -64,10 +47,7 @@ public class Board {
 			if(!possibleStartCoordinates.contains(coordinate)){
 				piece.setMovedThisGame(true);
 			}
-		}
-		
-		
-		
+		}	
 		pieces[coordinate.getX()][coordinate.getY()] = piece;
 	}
 	
@@ -97,12 +77,27 @@ public class Board {
 		return boardCopy;
 	}
 	
-	
 	public ArrayList<Move> getMoveHistoryCopy() {
 		ArrayList<Move> moveHistoryCopy = new ArrayList<Move>();
 		for(Move move: moveHistory){
 			moveHistoryCopy.add(move);
 		}
 		return moveHistoryCopy;
+	}
+	
+	public List<Move> getMoveHistory() {
+		return moveHistory;
+	}
+
+	public Piece[][] getPieces() {
+		return pieces;
+	}
+
+	public BoardState getState() {
+		return state;
+	}
+
+	public void setState(BoardState state) {
+		this.state = state;
 	}
 }
