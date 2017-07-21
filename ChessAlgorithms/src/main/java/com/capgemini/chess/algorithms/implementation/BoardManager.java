@@ -314,8 +314,7 @@ public class BoardManager {
 				/*
 				initialPossibleMovePaths = pawn.getDoubleMovePaths();
 				initialPossibleMoveCoordinates = calculateInitialPossibleMoveCoordinates(from,to,initialPossibleMovePaths);
-				*/
-				
+				*/			
 				
 				/*
 				 * if(board.getMoveHistory().size()>0){
@@ -335,9 +334,15 @@ public class BoardManager {
 				}
 				 */
 				
-			} //else if (piece.getType()==PieceType.KING){
+			} 
+			
+			
+			if (piece.getType()==PieceType.KING){
 				
-			//}
+				if(validateCastling(from, to)){
+					return new Move(from,to,MoveType.CASTLING,board.getPieceAt(from));
+				}	
+			}
 			
 			
 			
@@ -375,29 +380,13 @@ public class BoardManager {
 
 	private boolean isKingInCheck(Color kingColor) {
 		
-		ArrayList<PieceCoordinate> piecesWithCoordinates = getAllPiecesOfColor(getEnemyColor(kingColor));
-		boolean kingChecked = false;
-		
 		Coordinate to = getKingCoordinate(kingColor);
 		if(to == null){
 			return false;
 		}
 		
-		for (int i = 0; i < piecesWithCoordinates.size() && !kingChecked; i++) {
-			PieceCoordinate pc = piecesWithCoordinates.get(i);
-			Coordinate from = pc.getPosition();
-			
-			ArrayList<Path> initialPossibleCapturePaths = pc.getPiece().getCapturePaths();
-			ArrayList<Coordinate> initialPossibleCaptureCoordinates = calculateInitialPossibleCaptureCoordinates(from,to,initialPossibleCapturePaths,getEnemyColor(kingColor));
-			
-			if(initialPossibleCaptureCoordinates.contains(to)){
-				kingChecked = true;
-			}					
-			//validateMove(pc.getPosition(), getKingCoordinate(calculateNextMoveColor()));
-		}
+		return isFieldUnderAttack(to, getEnemyColor(kingColor));
 		
-		//return false;
-		return kingChecked;
 	}
 
 	private boolean isAnyMoveValid(Color nextMoveColor) {
@@ -593,7 +582,7 @@ public class BoardManager {
 		//movesCopy.add(moveToTest);
 		//System.out.println("b");
 		BoardManager testBoardManager = new BoardManager(newBoard);
-		testBoardManager.addMove(moveToTest);;
+		testBoardManager.addMove(moveToTest);
 		//System.out.println("c");
 		
 		if(testBoardManager.isKingInCheck(calculateNextMoveColor())){
@@ -601,5 +590,114 @@ public class BoardManager {
 		} else {
 			return false;
 		}
+	}
+	
+	private boolean validateCastling(Coordinate kingStart, Coordinate kingDestination){
+		
+		//boolean validCastling = false;
+		King king = ((King)board.getPieceAt(kingStart));
+		
+		if(isKingInCheck(calculateNextMoveColor())){
+			return false;
+		}
+		
+		if(king.isMovedThisGame()){
+			return false;
+		}
+		
+		
+		ArrayList<Path> initialPossibleCastlingPaths = king.getCastlingPaths();
+		ArrayList<Coordinate> initialPossibleCastlingCoordinates = 
+				calculateInitialPossibleMoveCoordinates(kingStart, kingDestination, initialPossibleCastlingPaths);
+				
+		if(!initialPossibleCastlingCoordinates.contains(kingDestination)){
+			return false;
+		}
+		
+		int rookX = 0;
+		int rookY = 0;
+		int direction = -1;
+		
+		if(kingStart.getX()<kingDestination.getX()){
+			rookX= Board.SIZE-1;	
+			direction = 1;
+		}
+		
+		
+		if(king.getColor() == Color.BLACK){
+			rookY = Board.SIZE-1;
+		} 
+		
+		Coordinate rookCoordinate = new Coordinate(rookX,rookY);
+		
+		Piece piece = board.getPieceAt(rookCoordinate);
+		if (piece == null){
+			return false;
+		}
+		if(piece.getType() != PieceType.ROOK){
+			return false;
+		}
+		if(piece.isMovedThisGame()){
+			return false;
+		}
+		
+		for(int x=kingStart.getX()+direction;x<rookX;x+=direction){
+			if(board.getPieceAt(new Coordinate(x,rookY)) != null){
+				return false;
+			}
+		}
+		
+		if(isFieldUnderAttack(new Coordinate((kingStart.getX()+kingDestination.getX())/2,rookY),getEnemyColor(king.getColor()))){
+			return false;
+		}
+		
+		if(isFieldUnderAttack(new Coordinate(kingDestination.getX(),rookY),getEnemyColor(king.getColor()))){
+			return false;
+		}
+		
+
+		//return validCastling;
+		return true;
+	}
+	
+	private boolean isFieldUnderAttack(Coordinate field, Color attackerColor) {
+		
+		if(field == null){
+			return false;
+		} 
+		
+		Piece piece = board.getPieceAt(field);
+			
+		if(piece != null && piece.getColor() == attackerColor){
+			return false;
+		}
+						
+		ArrayList<PieceCoordinate> piecesWithCoordinates = getAllPiecesOfColor(attackerColor);	
+		boolean fieldAttacked = false;
+							
+		for (int i = 0; i < piecesWithCoordinates.size() && !fieldAttacked; i++) {
+			PieceCoordinate pc = piecesWithCoordinates.get(i);
+			Coordinate from = pc.getPosition();
+			ArrayList<Path> paths;
+			ArrayList<Coordinate> coordinates;
+			if(piece == null){	
+				paths = pc.getPiece().getMovePaths();
+				coordinates = calculateInitialPossibleMoveCoordinates(from, field, paths);
+			} else {
+				paths = pc.getPiece().getCapturePaths();
+				coordinates = calculateInitialPossibleCaptureCoordinates(from,field,paths,attackerColor);
+			}		
+			
+			if(coordinates.contains(field)){
+				fieldAttacked = true;
+			}					
+			//validateMove(pc.getPosition(), getKingCoordinate(calculateNextMoveColor()));
+		}	
+		
+		
+		
+		
+		//return false;
+		return fieldAttacked;
 	}
 }

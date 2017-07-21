@@ -28,6 +28,22 @@ public class King extends Piece {
 		return getMovePaths();
 	}
 	
+	public ArrayList<Path> getKingSideCastlingPaths(){
+		ArrayList<Path> paths = new ArrayList<Path>();
+
+		paths.add(new Path(2,0,false));
+		
+		return paths;
+	}
+	
+	public ArrayList<Path> getQueenSideCastlingPaths(){
+		ArrayList<Path> paths = new ArrayList<Path>();
+		
+		paths.add(new Path(-2,0,false));
+		
+		return paths;
+	}
+	
 	public ArrayList<Path> getCastlingPaths(){
 		ArrayList<Path> paths = new ArrayList<Path>();
 		
