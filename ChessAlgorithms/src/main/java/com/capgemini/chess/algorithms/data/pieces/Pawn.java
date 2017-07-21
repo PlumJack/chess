@@ -1,7 +1,9 @@
-package com.capgemini.chess.algorithms.data;
+package com.capgemini.chess.algorithms.data.pieces;
 
 import java.util.ArrayList;
 
+import com.capgemini.chess.algorithms.data.Coordinate;
+import com.capgemini.chess.algorithms.data.Path;
 import com.capgemini.chess.algorithms.data.enums.Color;
 import com.capgemini.chess.algorithms.data.enums.PieceType;
 import com.capgemini.chess.algorithms.data.generated.Board;

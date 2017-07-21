@@ -1,7 +1,7 @@
 package com.capgemini.chess.algorithms.data;
 
 import com.capgemini.chess.algorithms.data.Coordinate;
-import com.capgemini.chess.algorithms.data.Piece;
+import com.capgemini.chess.algorithms.data.pieces.Piece;
 
 public class PieceCoordinate {
 	

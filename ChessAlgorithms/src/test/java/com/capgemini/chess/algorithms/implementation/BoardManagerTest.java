@@ -7,19 +7,19 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.capgemini.chess.algorithms.data.Bishop;
 import com.capgemini.chess.algorithms.data.Coordinate;
-import com.capgemini.chess.algorithms.data.King;
-import com.capgemini.chess.algorithms.data.Knight;
 import com.capgemini.chess.algorithms.data.Move;
-import com.capgemini.chess.algorithms.data.Pawn;
-import com.capgemini.chess.algorithms.data.Piece;
-import com.capgemini.chess.algorithms.data.Queen;
-import com.capgemini.chess.algorithms.data.Rook;
 import com.capgemini.chess.algorithms.data.enums.BoardState;
 import com.capgemini.chess.algorithms.data.enums.Color;
 import com.capgemini.chess.algorithms.data.enums.MoveType;
 import com.capgemini.chess.algorithms.data.generated.Board;
+import com.capgemini.chess.algorithms.data.pieces.Bishop;
+import com.capgemini.chess.algorithms.data.pieces.King;
+import com.capgemini.chess.algorithms.data.pieces.Knight;
+import com.capgemini.chess.algorithms.data.pieces.Pawn;
+import com.capgemini.chess.algorithms.data.pieces.Piece;
+import com.capgemini.chess.algorithms.data.pieces.Queen;
+import com.capgemini.chess.algorithms.data.pieces.Rook;
 import com.capgemini.chess.algorithms.implementation.exceptions.InvalidMoveException;
 import com.capgemini.chess.algorithms.implementation.exceptions.KingInCheckException;
 
