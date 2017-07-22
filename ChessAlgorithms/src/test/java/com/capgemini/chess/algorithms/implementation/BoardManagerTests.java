@@ -14,6 +14,7 @@ import com.capgemini.chess.algorithms.data.enums.Color;
 import com.capgemini.chess.algorithms.data.enums.MoveType;
 import com.capgemini.chess.algorithms.data.generated.Board;
 import com.capgemini.chess.algorithms.data.pieces.Bishop;
+import com.capgemini.chess.algorithms.data.pieces.Dragon;
 import com.capgemini.chess.algorithms.data.pieces.King;
 import com.capgemini.chess.algorithms.data.pieces.Knight;
 import com.capgemini.chess.algorithms.data.pieces.Pawn;
@@ -984,6 +985,77 @@ public class BoardManagerTests {
 		}
 		return counter;
 	}
-
+	
+	@Test
+	public void shouldPerformMoveDragonCapture() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new Dragon(Color.WHITE), new Coordinate(4, 2));
+		board.setPieceAt(new Knight(Color.BLACK), new Coordinate(5, 3));
+		
+		// when
+		BoardManager boardManager = new BoardManager(board);
+		Move move = boardManager.performMove(new Coordinate(4, 2), new Coordinate(5, 3));
+		
+		// then
+		assertEquals(MoveType.CAPTURE, move.getType());
+		assertEquals(new Dragon(Color.WHITE), move.getMovedPiece());
+	}
+	
+	@Test
+	public void shouldPerformMoveDragonMovement() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new Dragon(Color.WHITE), new Coordinate(4, 2));
+		board.setPieceAt(new Knight(Color.BLACK), new Coordinate(5, 3));
+		
+		// when
+		BoardManager boardManager = new BoardManager(board);
+		Move move = boardManager.performMove(new Coordinate(4, 2), new Coordinate(7, 5));
+		
+		// then
+		assertEquals(MoveType.MOVEMENT, move.getType());
+		assertEquals(new Dragon(Color.WHITE), move.getMovedPiece());
+	}
+	
+	@Test
+	public void shouldGetExceptionForInvalidPerformMoveDragonMovementTooFar() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new Dragon(Color.WHITE), new Coordinate(4, 2));
+		
+		// when
+		BoardManager boardManager = new BoardManager(board);	
+		boolean exceptionThrown = false;
+		try {
+			boardManager.performMove(new Coordinate(4, 2), new Coordinate(0, 2));
+		} catch (InvalidMoveException e) {
+			exceptionThrown = true;
+		}
+		
+		// then
+		assertTrue(exceptionThrown);
+	}
+	
+	@Test
+	public void shouldGetExceptionForInvalidDragonCapture() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new Dragon(Color.WHITE), new Coordinate(4, 2));
+		board.setPieceAt(new Knight(Color.BLACK), new Coordinate(7, 5));
+		
+		// when
+		BoardManager boardManager = new BoardManager(board);	
+		boolean exceptionThrown = false;
+		try {
+			boardManager.performMove(new Coordinate(4, 2), new Coordinate(7, 5));
+		} catch (InvalidMoveException e) {
+			exceptionThrown = true;
+		}
+		
+		// then
+		assertTrue(exceptionThrown);		
+	}
+	
 	
 }
