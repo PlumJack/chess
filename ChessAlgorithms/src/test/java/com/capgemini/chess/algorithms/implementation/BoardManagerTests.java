@@ -32,7 +32,7 @@ import com.capgemini.chess.algorithms.implementation.exceptions.KingInCheckExcep
 public class BoardManagerTests {
 
 	@Test
-	public void testGenerateBoardInitialPosition() {
+	public void shouldGenerateBoardInitialPosition() {
 		// given
 		List<Move> moves = new ArrayList<>();
 		
@@ -60,7 +60,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testGenerateBoardAttack() {
+	public void shouldMakeMovement() {
 		// given
 		List<Move> moves = new ArrayList<>();
 		Move move = new Move();
@@ -79,7 +79,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testGenerateBoardCapture() {
+	public void shouldMakeCapture() {
 		// given
 		List<Move> moves = new ArrayList<>();
 		Move move = new Move();
@@ -98,7 +98,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testGenerateBoardCastling() {
+	public void shouldMakeCastling() {
 		// given
 		List<Move> moves = new ArrayList<>();
 		Move move = new Move();
@@ -118,7 +118,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testGenerateBoardEnPassant() {
+	public void shouldMakeEnPassant() {
 		// given
 		List<Move> moves = new ArrayList<>();
 		Move move1 = new Move();
@@ -149,7 +149,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testGenerateBoardPromotion() {
+	public void shouldMakePromotion() {
 		// given
 		List<Move> moves = new ArrayList<>();
 		Move move = new Move();
@@ -166,7 +166,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveBishopAttack() throws InvalidMoveException {
+	public void shouldPerformMoveBishopMovement() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(0, 6));
@@ -181,7 +181,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMovePawnAttack() throws InvalidMoveException {
+	public void shouldPerformMovePawnMovement() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.getMoveHistory().add(createDummyMove(board));
@@ -197,7 +197,7 @@ public class BoardManagerTests {
 	}
 
 	@Test
-	public void testPerformMoveKingAttack() throws InvalidMoveException {
+	public void shouldPerformMoveKingMovement() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new King(Color.WHITE), new Coordinate(4, 0));
@@ -212,7 +212,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveKnightCapture() throws InvalidMoveException {
+	public void shouldPerformMoveKnightCapture() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.getMoveHistory().add(createDummyMove(board));
@@ -229,7 +229,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveQueenCapture() throws InvalidMoveException {
+	public void shouldPerformMoveQueenCapture() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Queen(Color.WHITE), new Coordinate(5, 0));
@@ -245,7 +245,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveRookCapture() throws InvalidMoveException {
+	public void shouldPerformMoveRookCapture() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.getMoveHistory().add(createDummyMove(board));
@@ -262,7 +262,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveCastling() throws InvalidMoveException {
+	public void shouldPerformMoveCastling() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new King(Color.WHITE), new Coordinate(4, 0));
@@ -278,7 +278,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveEnPassant() throws InvalidMoveException {
+	public void shouldPerformMoveEnPassant() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		BoardManager boardManager = new BoardManager(board);
@@ -297,7 +297,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidIndexOutOfBound() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidIndexOutOfBound() {
 		// given
 		BoardManager boardManager = new BoardManager();
 		
@@ -314,7 +314,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidMoveOrder() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidMoveOrder() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new King(Color.BLACK), new Coordinate(0, 7));
@@ -333,7 +333,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidEmptySpot() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidEmptySpot() {
 		// given
 		Board board = new Board();
 		
@@ -351,7 +351,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidSameSpot() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidSameSpot() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new King(Color.WHITE), new Coordinate(0, 0));
@@ -371,7 +371,7 @@ public class BoardManagerTests {
 	
 	
 	@Test
-	public void testPerformMoveInvalidPawnBackwardMove() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidPawnBackwardMove() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(1, 2));
@@ -390,7 +390,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidPawnAttackDestination() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidPawnAttackDestination() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(1, 2));
@@ -409,7 +409,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidPawnAttackDistance() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidPawnAttackDistance() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(1, 2));
@@ -428,7 +428,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidPawnCaptureDestination() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidPawnCaptureDestination() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(1, 2));
@@ -448,7 +448,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidKingDistance() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidKingDistance() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new King(Color.WHITE), new Coordinate(4, 0));
@@ -467,7 +467,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidKnightDestination() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidKnightDestination() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Knight(Color.WHITE), new Coordinate(1, 1));
@@ -486,7 +486,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidBishopDestination() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidBishopDestination() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Bishop(Color.WHITE), new Coordinate(1, 1));
@@ -505,7 +505,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidQueenLeapsOver() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidQueenLeapsOver() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Queen(Color.WHITE), new Coordinate(1, 1));
@@ -525,7 +525,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidRookLeapsOver() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidRookLeapsOver() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Rook(Color.WHITE), new Coordinate(3, 0));
@@ -545,7 +545,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidOwnPieceCapture() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidOwnPieceCapture() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new Knight(Color.WHITE), new Coordinate(5, 6));
@@ -565,7 +565,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidCastlingPiecesMoved() throws InvalidMoveException {
+	public void shouldGetExceptionForPerformMoveWhenInvalidCastlingPiecesMoved() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		BoardManager boardManager = new BoardManager(board);
@@ -590,7 +590,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidCastlingWithPiecesBetween() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidCastlingWithPiecesBetween() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new King(Color.WHITE), new Coordinate(4, 0));
@@ -611,7 +611,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidCastlingKingUnderCheck() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidCastlingKingUnderCheck() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new King(Color.WHITE), new Coordinate(4, 0));
@@ -632,7 +632,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testPerformMoveInvalidKingWouldBeChecked() {
+	public void shouldGetExceptionForPerformMoveWhenInvalidKingWouldBeChecked() {
 		// given
 		Board board = new Board();
 		board.setPieceAt(new King(Color.WHITE), new Coordinate(4, 0));
@@ -653,7 +653,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testUpdateBoardStateRegular() throws InvalidMoveException {
+	public void shouldUpdateBoardStateRegular() throws InvalidMoveException {
 		// given
 		BoardManager boardManager = new BoardManager();
 		
@@ -665,7 +665,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testUpdateBoardStateCheck() throws InvalidMoveException {
+	public void shouldUpdateBoardStateCheck() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.getMoveHistory().add(createDummyMove(board));
@@ -681,7 +681,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testUpdateBoardStateCheckMate() throws InvalidMoveException {
+	public void shouldUpdateBoardStateCheckMate() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.getMoveHistory().add(createDummyMove(board));
@@ -698,7 +698,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testUpdateBoardStateStaleMate() throws InvalidMoveException {
+	public void shouldUpdateBoardStateStaleMate() throws InvalidMoveException {
 		// given
 		Board board = new Board();
 		board.getMoveHistory().add(createDummyMove(board));
@@ -715,7 +715,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testCheckThreefoldRepetitionRuleSuccessful() {
+	public void shouldCheckThreefoldRepetitionRuleSuccessful() {
 		// given
 		List<Move> moves = new ArrayList<>();
 		for (int i = 0; i < 2; i++) {
@@ -753,7 +753,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testCheckThreefoldRepetitionRuleUnsuccessful() {
+	public void shouldCheckThreefoldRepetitionRuleUnsuccessful() {
 		// given
 		List<Move> moves = new ArrayList<>();
 		Move move1 = new Move();
@@ -789,7 +789,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testCheckFiftyMoveRuleSuccessful() {
+	public void shouldCheckFiftyMoveRuleSuccessful() {
 		// given
 		Board board = new Board();
 		BoardManager boardManager = new BoardManager(board);
@@ -805,7 +805,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testCheckFiftyMoveRuleUnsuccessfulNotEnoughMoves() {
+	public void shouldCheckFiftyMoveRuleUnsuccessfulWhenNotEnoughMoves() {
 		// given
 		Board board = new Board();
 		BoardManager boardManager = new BoardManager(board);
@@ -821,7 +821,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void testCheckFiftyMoveRuleUnsuccessfulPawnMoved() {
+	public void shouldCheckFiftyMoveRuleUnsuccessfulWhenPawnMoved() {
 		// given
 		BoardManager boardManager = new BoardManager(new Board());
 		
@@ -875,25 +875,6 @@ public class BoardManagerTests {
 		}
 		return counter;
 	}
-	
-	@Test
-	public void testEqualsOnFigures() throws InvalidMoveException {
-		// given
-		Rook rook1 = new Rook(Color.BLACK);
-		Rook rook2 = new Rook(Color.BLACK);
-		Rook rook3 = new Rook(Color.WHITE);
-		Rook rook4 = new Rook(Color.WHITE);
-		
-		Queen queen1 = new Queen(Color.BLACK);
-		Queen queen2 = new Queen(Color.WHITE);
-		// when
-		
-		// then
-		assertEquals(rook1, rook2);
-		assertEquals(rook3, rook4);
-		assertNotEquals(rook2, rook3);
-		assertNotEquals(rook1, queen1);
-		assertNotEquals(rook1, queen2);
-	}
+
 	
 }
