@@ -149,7 +149,7 @@ public class BoardManagerTests {
 	}
 	
 	@Test
-	public void shouldMakePromotion() {
+	public void shouldMakePromotionForBlackPawn() {
 		// given
 		List<Move> moves = new ArrayList<>();
 		Move move = new Move();
@@ -163,6 +163,23 @@ public class BoardManagerTests {
 		
 		// then
 		assertEquals(new Queen(Color.BLACK), boardManager.getBoard().getPieceAt(new Coordinate(1, 0)));
+	}
+	
+	@Test
+	public void shouldMakePromotionForWhitePawn() {
+		// given
+		List<Move> moves = new ArrayList<>();
+		Move move = new Move();
+		move.setFrom(new Coordinate(1, 1));
+		move.setTo(new Coordinate(1, 7));
+		move.setType(MoveType.CAPTURE);
+		moves.add(move);
+
+		// when
+		BoardManager boardManager = new BoardManager(moves);
+		
+		// then
+		assertEquals(new Queen(Color.WHITE), boardManager.getBoard().getPieceAt(new Coordinate(1, 7)));
 	}
 	
 	@Test
@@ -295,6 +312,76 @@ public class BoardManagerTests {
 		assertEquals(MoveType.EN_PASSANT, move.getType());
 		assertEquals(new Pawn(Color.WHITE), move.getMovedPiece());
 	}
+	
+	@Test
+	public void shouldGetExceptionFromIncorrectXPerformMoveEnPassant() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		BoardManager boardManager = new BoardManager(board);
+		
+		board.getMoveHistory().add(createDummyMove(board));
+		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(1, 4));
+		board.setPieceAt(new Pawn(Color.BLACK), new Coordinate(2, 6));
+		boardManager.performMove(new Coordinate(2, 6), new Coordinate(2, 4));
+		
+		// when
+		boolean exceptionThrown = false;
+		try {
+			boardManager.performMove(new Coordinate(1, 4), new Coordinate(3, 5));
+		} catch (InvalidMoveException e) {
+			exceptionThrown = true;
+		}
+			
+		// then
+		assertTrue(exceptionThrown);
+	}
+	
+	@Test
+	public void shouldGetExceptionFromIncorrectYPerformMoveEnPassant() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		BoardManager boardManager = new BoardManager(board);
+		
+		board.getMoveHistory().add(createDummyMove(board));
+		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(1, 4));
+		board.setPieceAt(new Pawn(Color.BLACK), new Coordinate(2, 6));
+		boardManager.performMove(new Coordinate(2, 6), new Coordinate(2, 4));
+		
+		// when
+		boolean exceptionThrown = false;
+		try {
+			boardManager.performMove(new Coordinate(1, 4), new Coordinate(2, 3));
+		} catch (InvalidMoveException e) {
+			exceptionThrown = true;
+		}
+			
+		// then
+		assertTrue(exceptionThrown);
+	}
+	
+	@Test
+	public void shouldGetExceptionFromIncorrectColumnPerformMoveEnPassant() throws InvalidMoveException {
+		// given
+		Board board = new Board();
+		BoardManager boardManager = new BoardManager(board);
+		
+		board.getMoveHistory().add(createDummyMove(board));
+		board.setPieceAt(new Pawn(Color.WHITE), new Coordinate(1, 4));
+		board.setPieceAt(new Pawn(Color.BLACK), new Coordinate(3, 6));
+		boardManager.performMove(new Coordinate(3, 6), new Coordinate(3, 4));
+		
+		// when
+		boolean exceptionThrown = false;
+		try {
+			boardManager.performMove(new Coordinate(1, 4), new Coordinate(3, 5));
+		} catch (InvalidMoveException e) {
+			exceptionThrown = true;
+		}
+			
+		// then
+		assertTrue(exceptionThrown);
+	}
+	
 	
 	@Test
 	public void shouldGetExceptionForPerformMoveWhenInvalidIndexOutOfBound() {
@@ -609,6 +696,28 @@ public class BoardManagerTests {
 		// then 
 		assertTrue(exceptionThrown);
 	}
+	
+	@Test
+	public void shouldGetExceptionForPerformMoveWhenFieldBetweenUnderAttack() {
+		// given
+		Board board = new Board();
+		board.setPieceAt(new King(Color.WHITE), new Coordinate(4, 0));
+		board.setPieceAt(new Rook(Color.WHITE), new Coordinate(7, 0));
+		board.setPieceAt(new Rook(Color.BLACK), new Coordinate(5, 7));
+		
+		// when
+		BoardManager boardManager = new BoardManager(board);
+		boolean exceptionThrown = false;
+		try {
+			boardManager.performMove(new Coordinate(4, 0), new Coordinate(6, 0));
+		} catch (InvalidMoveException e) {
+			exceptionThrown = true;
+		}
+		
+		// then 
+		assertTrue(exceptionThrown);
+	}
+	
 	
 	@Test
 	public void shouldGetExceptionForPerformMoveWhenInvalidCastlingKingUnderCheck() {

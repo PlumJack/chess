@@ -245,8 +245,7 @@ public class BoardManager {
 
 	private Move validateMove(Coordinate from, Coordinate to) throws InvalidMoveException, KingInCheckException {
 
-		initialPieceValidation(from,to);
-		
+		initialPieceValidation(from,to);	
 		Piece fromCoordinateTo = board.getPieceAt(to);
 		
 		if(fromCoordinateTo==null){			
@@ -258,7 +257,7 @@ public class BoardManager {
 			}			
 		}
 		
-		throw new InvalidMoveException("Something went wrong.");
+		throw new InvalidMoveException();
 	}
 
 	private boolean isKingInCheck(Color kingColor) {
@@ -274,18 +273,14 @@ public class BoardManager {
 	private boolean isAnyMoveValid(Color nextMoveColor) {
 		
 		ArrayList<PieceCoordinate> piecesWithCoordinates = getAllPiecesOfColor(nextMoveColor);
-		boolean anyMoveValid = false;
 		
-		for (int i = 0; i < piecesWithCoordinates.size() && !anyMoveValid; i++) {
+		for (int i = 0; i < piecesWithCoordinates.size(); i++) {
 			
-			for(int x=0; x<Board.SIZE && !anyMoveValid; x++){
-				for(int y=0; y<Board.SIZE && !anyMoveValid; y++){
+			for(int x=0; x<Board.SIZE; x++){
+				for(int y=0; y<Board.SIZE; y++){
 					try {
-						Move move = validateMove(piecesWithCoordinates.get(i).getPosition(), new Coordinate(x,y));
-						if(move != null){
-							anyMoveValid = true;
-							return true;
-						}
+						validateMove(piecesWithCoordinates.get(i).getPosition(), new Coordinate(x,y));
+						return true;
 					} catch (KingInCheckException e) {
 						continue;
 					} catch (InvalidMoveException e) {
@@ -294,8 +289,7 @@ public class BoardManager {
 				}
 			}			
 		}
-
-		return anyMoveValid;
+		return false;
 	}
 
 	private Color calculateNextMoveColor() {
